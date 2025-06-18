@@ -1,0 +1,76 @@
+import random
+
+class Carta:
+    def __init__(self, valor):
+        self.valor = valor
+        self.siguiente = None
+        self.anterior = None
+
+class Baraja:
+    def __init__(self):
+        self.primera = None
+
+    def agregar_carta(self, valor):
+        nueva = Carta(valor)
+        if not self.primera:
+            self.primera = nueva
+            nueva.siguiente = nueva.anterior = nueva
+        else:
+            ultima = self.primera.anterior
+            ultima.siguiente = nueva
+            nueva.anterior = ultima
+            nueva.siguiente = self.primera
+            self.primera.anterior = nueva
+
+    def sacar_carta_arriba(self):
+        if not self.primera:
+            return None
+        valor = self.primera.valor
+        if self.primera.siguiente == self.primera:
+            self.primera = None
+        else:
+            nueva_primera = self.primera.siguiente
+            ultima = self.primera.anterior
+            ultima.siguiente = nueva_primera
+            nueva_primera.anterior = ultima
+            self.primera = nueva_primera
+        return valor
+
+    def barajar(self):
+        if not self.primera:
+            return
+        # Convertir a lista
+        cartas = []
+        actual = self.primera
+        while True:
+            cartas.append(actual.valor)
+            actual = actual.siguiente
+            if actual == self.primera:
+                break
+        random.shuffle(cartas)
+        # Reconstruir
+        self.primera = None
+        for valor in cartas:
+            self.agregar_carta(valor)
+
+    def mostrar(self):
+        if not self.primera:
+            print("Baraja vacía")
+            return
+        actual = self.primera
+        while True:
+            print(actual.valor, end=" -> ")
+            actual = actual.siguiente
+            if actual == self.primera:
+                break
+        print("(inicio)")
+
+# Ejemplo de uso
+baraja = Baraja()
+for valor in range(1, 6):  # 5 cartas
+    baraja.agregar_carta(f"Carta {valor}")
+baraja.mostrar()
+baraja.barajar()
+baraja.mostrar()
+print("Sacando:", baraja.sacar_carta_arriba())
+baraja.mostrar()
