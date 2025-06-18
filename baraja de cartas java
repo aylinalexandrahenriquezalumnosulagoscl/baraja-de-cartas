@@ -1,0 +1,87 @@
+public class Baraja {
+    static class Carta {
+        String valor;
+        Carta siguiente;
+        Carta anterior;
+
+        Carta(String valor) {
+            this.valor = valor;
+        }
+    }
+
+    private Carta primera = null;
+
+    // Agregar carta al final
+    public void agregarCarta(String valor) {
+        Carta nueva = new Carta(valor);
+        if (primera == null) {
+            primera = nueva;
+            nueva.siguiente = nueva.anterior = nueva;
+        } else {
+            Carta ultima = primera.anterior;
+            ultima.siguiente = nueva;
+            nueva.anterior = ultima;
+            nueva.siguiente = primera;
+            primera.anterior = nueva;
+        }
+    }
+
+    // Sacar la carta de arriba
+    public String sacarCartaArriba() {
+        if (primera == null) return null;
+        String valor = primera.valor;
+        if (primera.siguiente == primera) {
+            primera = null;
+        } else {
+            Carta nuevaPrimera = primera.siguiente;
+            Carta ultima = primera.anterior;
+            ultima.siguiente = nuevaPrimera;
+            nuevaPrimera.anterior = ultima;
+            primera = nuevaPrimera;
+        }
+        return valor;
+    }
+
+    // Barajar (reordenar aleatoriamente)
+    public void barajar() {
+        if (primera == null) return;
+        java.util.List<String> valores = new java.util.ArrayList<>();
+        Carta actual = primera;
+        do {
+            valores.add(actual.valor);
+            actual = actual.siguiente;
+        } while (actual != primera);
+
+        java.util.Collections.shuffle(valores);
+        primera = null;
+        for (String val : valores) {
+            agregarCarta(val);
+        }
+    }
+
+    // Mostrar baraja
+    public void mostrar() {
+        if (primera == null) {
+            System.out.println("Baraja vacía");
+            return;
+        }
+        Carta actual = primera;
+        do {
+            System.out.print(actual.valor + " -> ");
+            actual = actual.siguiente;
+        } while (actual != primera);
+        System.out.println("(inicio)");
+    }
+
+    public static void main(String[] args) {
+        Baraja baraja = new Baraja();
+        for (int i = 1; i <= 5; i++) {
+            baraja.agregarCarta("Carta " + i);
+        }
+        baraja.mostrar();
+        baraja.barajar();
+        baraja.mostrar();
+        System.out.println("Sacando: " + baraja.sacarCartaArriba());
+        baraja.mostrar();
+    }
+}
